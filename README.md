@@ -70,8 +70,9 @@ LOGIN_REDIRECT_URL = 'home'
     ]
 ```
 ## Add code to the templates
+
+## registration/login.html
 ```
-#######   registration/login.html   ############
     {% extends 'base.html' %}
 
     {% block title %}Login{% endblock %}
@@ -84,10 +85,10 @@ LOGIN_REDIRECT_URL = 'home'
         <button type="submit">Login</button>
       </form>
     {% endblock %}
+```
+## logged_out.html
 
-###########   logged_out.html   ###########
-
-
+```
 {% extends 'base.html' %}
 
 {% block title %}See you!{% endblock %}
@@ -97,11 +98,11 @@ LOGIN_REDIRECT_URL = 'home'
   <p>You have been successfully logged out.</p>
   <p><a href="{% url 'login' %}">Log in</a> again.</p>
 {% endblock %}
+```
 
 
-
-#########     base.html ##########
-
+##   base.html
+```
 <!DOCTYPE html>
 <html>
 <head>
@@ -129,11 +130,11 @@ LOGIN_REDIRECT_URL = 'home'
   </footer>
 </body>
 </html>
+```
 
+## home.html
 
-####### home.html ########
-
-
+```
 {% extends 'base.html' %}
 
 {% block title %}Login{% endblock %}
@@ -141,10 +142,11 @@ LOGIN_REDIRECT_URL = 'home'
 {% block content %}
   <h2>Home</h2>
 {% endblock %}
-
+```
 
 ### Part-2 (Reset Password)
 ## Add html file to the templates
+
 ```
     touch templates/registration/password_reset_form.html
     touch templates/registration/password_reset_email.html
@@ -157,71 +159,76 @@ LOGIN_REDIRECT_URL = 'home'
 ## Edit urls.py
 
 ```
-from django.contrib import admin
-from django.urls import path
-from django.contrib.auth import views as auth_views #new
-from django.views.generic.base import TemplateView #new
+  from django.contrib import admin
+  from django.urls import path
+  from django.contrib.auth import views as auth_views #new
+  from django.views.generic.base import TemplateView #new
 
-urlpatterns = [
-	path('admin/', admin.site.urls),
-	path('',TemplateView.as_view(template_name='home.html'),name='home'),
- 	path('login/', auth_views.login, name='login'),
-  path('logout/', auth_views.logout,{'next_page':'/'}, name='logout'),	# home page or redirect page
-
-	#reset password
-	path('password_reset/', auth_views.password_reset, name='password_reset'),
-  path('password_reset/done/', auth_views.password_reset_done, name='password_reset_done'),
-  path('reset/<uidb64>/<token>/',auth_views.password_reset_confirm, name='password_reset_confirm'),
-  path('reset/done/', auth_views.password_reset_complete, name='password_reset_complete'),
-]     
+  urlpatterns = [
+  	path('admin/', admin.site.urls),
+  	path('',TemplateView.as_view(template_name='home.html'),name='home'),
+   	path('login/', auth_views.login, name='login'),
+    path('logout/', auth_views.logout,{'next_page':'/'}, name='logout'),
+  	path('password_reset/', auth_views.password_reset, name='password_reset'),
+    path('password_reset/done/', auth_views.password_reset_done, name='password_reset_done'),
+    path('reset/<uidb64>/<token>/',auth_views.password_reset_confirm, name='password_reset_confirm'),
+    path('reset/done/', auth_views.password_reset_complete, name='password_reset_complete'),
+  ]     
 ````
+
 ## Add code to the html pages
-```
-#### registration/password_reset_form.html ###
-```
-{% extends 'base.html' %}
 
-{% block content %}
-  <h3>Forgot password</h3>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-  </form>
-{% endblock %}
+
+## registration/password_reset_form.html
+```
+    {% extends 'base.html' %}
+
+    {% block content %}
+      <h3>Forgot password</h3>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+      </form>
+    {% endblock %}
 ```
 
-### registration/password_reset_email.html ###
-```
-{% autoescape off %}
-To initiate the password reset process for your {{ user.get_username }} TestSite Account,
-click the link below:
+## registration/password_reset_email.html
 
-{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
-
-If clicking the link above doesn't work, please copy and paste the URL in a new browser
-window instead.
-
-Sincerely,
-The TestSite Team
-{% endautoescape %}
 ```
-### registration/password_reset_done.html ###
-```
-{% extends 'base.html' %}
+    {% autoescape off %}
+    To initiate the password reset process for your {{ user.get_username }} TestSite Account,
+    click the link below:
 
-{% block content %}
-  <p>
-    We've emailed you instructions for setting your password, if an account exists with the email you entered.
-    You should receive them shortly.
-  </p>
-  <p>
-    If you don't receive an email, please make sure you've entered the address you registered with,
-    and check your spam folder.
-  </p>
-{% endblock %}
+    {{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+    If clicking the link above doesn't work, please copy and paste the URL in a new browser
+    window instead.
+
+    Sincerely,
+    The TestSite Team
+    {% endautoescape %}
 ```
-### registration/password_reset_confirm.html###
+
+## registration/password_reset_done.html
+
+```
+    {% extends 'base.html' %}
+
+    {% block content %}
+      <p>
+        We've emailed you instructions for setting your password, if an account exists with the email you entered.
+        You should receive them shortly.
+      </p>
+      <p>
+        If you don't receive an email, please make sure you've entered the address you registered with,
+        and check your spam folder.
+      </p>
+    {% endblock %}
+```
+
+## registration/password_reset_confirm.html
+
 ```
 {% extends 'base.html' %}
 
@@ -241,7 +248,9 @@ The TestSite Team
   {% endif %}
 {% endblock %}
 ```
-### registration/password_reset_complete.html###
+
+## registration/password_reset_complete.html
+
 ```
 {% extends 'base.html' %}
 
@@ -251,7 +260,9 @@ The TestSite Team
   </p>
 {% endblock %}
 ```
-### registration/password_reset_subject.txt###
+
+## registration/password_reset_subject.txt
+
 ```
 TestSite password reset
 
@@ -260,10 +271,10 @@ TestSite password reset
 ## Settings.py
 ```
 
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'testsite_app'
-EMAIL_HOST_PASSWORD = 'mys3cr3tp4ssw0rd'
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'TestSite Team <noreply@example.com>'
+    EMAIL_HOST = 'smtp.sendgrid.net'
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = 'testsite_app'
+    EMAIL_HOST_PASSWORD = 'mys3cr3tp4ssw0rd'
+    EMAIL_USE_TLS = True
+    DEFAULT_FROM_EMAIL = 'TestSite Team <noreply@example.com>'
 ```
