@@ -278,3 +278,108 @@ TestSite password reset
     EMAIL_USE_TLS = True
     DEFAULT_FROM_EMAIL = 'TestSite Team <noreply@example.com>'
 ```
+### SignUp_Basic (Part-3)
+```
+	create a app name account
+	django-admin startapp account
+```
+## Add code to the Urls.py
+```
+
+	from django.contrib import admin
+	from django.urls import path
+	from django.contrib.auth import views as auth_views #new
+	from django.views.generic.base import TemplateView #new
+	from django.conf.urls import include
+	from account import views as core_views
+
+	urlpatterns = [
+		path('admin/', admin.site.urls),
+		path('',TemplateView.as_view(template_name='home.html'),name='home'),
+	 	path('login/', auth_views.login, name='login'),
+	    	path('logout/', auth_views.logout,{'next_page':'/'}, name='logout'),
+		path('password_reset/', auth_views.password_reset, name='password_reset'),
+	    	path('password_reset/done/', auth_views.password_reset_done, name='password_reset_done'),
+		path('reset/<uidb64>/<token>/',auth_views.password_reset_confirm, name='password_reset_confirm'),
+	    	path('reset/done/', auth_views.password_reset_complete, name='password_reset_complete'),
+		path('signup/', core_views.signup, name='signup'),
+	]
+
+```
+
+## account/views.py
+```
+	from django.contrib.auth import login, authenticate
+	from django.contrib.auth.forms import UserCreationForm
+	from django.shortcuts import render, redirect
+
+	def signup(request):
+	    if request.method == 'POST':
+		form = UserCreationForm(request.POST)
+		if form.is_valid():
+		    form.save()
+		    username = form.cleaned_data.get('username')
+		    raw_password = form.cleaned_data.get('password1')
+		    user = authenticate(username=username, password=raw_password)
+		    login(request, user)
+		    return redirect('home')
+	    else:
+		form = UserCreationForm()
+	    return render(request, 'signup.html', {'form': form})
+```
+## templates/signup.html
+```
+	create a file name signup.html
+
+	{% extends 'base.html' %}
+
+	{% block content %}
+	  <h2>Sign up</h2>
+	  <form method="post">
+	    {% csrf_token %}
+	    {{ form.as_p }}
+	    <button type="submit">Sign up</button>
+	  </form>
+	{% endblock %}
+```
+OR
+```
+	{% extends 'base.html' %}
+
+	{% block content %}
+	  <h2>Sign up</h2>
+	  <form method="post">
+	    {% csrf_token %}
+	    {% for field in form %}
+	      <p>
+		{{ field.label_tag }}<br>
+		{{ field }}
+		{% if field.help_text %}
+		  <small style="color: grey">{{ field.help_text }}</small>
+		{% endif %}
+		{% for error in field.errors %}
+		  <p style="color: red">{{ error }}</p>
+		{% endfor %}
+	      </p>
+	    {% endfor %}
+	    <button type="submit">Sign up</button>
+	  </form>
+	{% endblock %}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
