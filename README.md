@@ -1,6 +1,6 @@
 # Django_Login_Reset_pass_Signup
 
-### Django Login part-1(Only login and logout)
+### Part-1(Only login and logout)
 
 ## 1. Create Project
 ```
@@ -278,7 +278,7 @@ TestSite password reset
     EMAIL_USE_TLS = True
     DEFAULT_FROM_EMAIL = 'TestSite Team <noreply@example.com>'
 ```
-### SignUp_Basic (Part-3)
+### Part-3(SignUp_Basic)
 ```
 	create a app name account
 	django-admin startapp account
