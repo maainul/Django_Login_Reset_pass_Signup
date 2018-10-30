@@ -413,7 +413,68 @@ def signup(request):
     return render(request, 'signup.html', {'form': form})
 ```
 
+### Part-5(Sign Up With Profile Model)
+## models.py
+```
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
+class Profile(models.Model):
+    user 	   = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio        = models.TextField(max_length=500, blank=True)
+    location   = models.CharField(max_length=30, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+
+@receiver(post_save, sender=User)
+def update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    instance.profile.save()
+```
+## forms.py
+```
+	from django import forms
+	from django.contrib.auth.forms import UserCreationForm
+	from django.contrib.auth.models import User
+
+
+	class SignUpForm(UserCreationForm):
+	    first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
+	    last_name  = forms.CharField(max_length=30, required=False, help_text='Optional.')
+	    email      = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
+	    birth_date = forms.DateField(help_text='Required. Format: YYYY-MM-DD')
+
+	    class Meta:
+		model  = User
+		fields = ('username', 'first_name', 'last_name', 'email','birth_date', 'password1', 'password2', )
+
+```
+## views.py
+```
+
+	from django.contrib.auth import login, authenticate
+	from django.shortcuts import render, redirect
+	from account.forms import SignUpForm
+
+	def signup(request):
+	    if request.method == 'POST':
+		form = SignUpForm(request.POST)
+		if form.is_valid():
+		    user = form.save()
+		    user.refresh_from_db()  # load the profile instance created by the signal
+		    user.profile.birth_date = form.cleaned_data.get('birth_date')
+		    user.save()
+		    raw_password = form.cleaned_data.get('password1')
+		    user = authenticate(username=user.username, password=raw_password)
+		    login(request, user)
+		    return redirect('home')
+	    else:
+		form = SignUpForm()
+	    return render(request, 'signup.html', {'form': form})
+
+```
 
 
 
